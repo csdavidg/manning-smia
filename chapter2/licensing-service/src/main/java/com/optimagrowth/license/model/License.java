@@ -1,10 +1,9 @@
 package com.optimagrowth.license.model;
 
-import org.springframework.hateoas.RepresentationModel;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.hateoas.RepresentationModel;
 
 
 @Getter @Setter @ToString
