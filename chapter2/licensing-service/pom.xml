@@ -70,6 +70,21 @@
                 </configuration>
             </plugin>
 
+<!--            Using layers to build the docker image
+                Once the command mvn package has run execute "java -Djarmode=layertools -jar target/licensing-service-0.0.1-SNAPSHOT.jar list"
+                in order to see the layers and the order in which they will be added to the image
+-->
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <layers>
+                        <enabled>true</enabled>
+                    </layers>
+                </configuration>
+            </plugin>
+
             <!-- This plugin is used to create a Docker image and publish
                  it to Docker hub-->
 

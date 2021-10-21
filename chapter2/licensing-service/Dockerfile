@@ -1,3 +1,28 @@
+#DOCKER FILE USING LAYERS
+FROM openjdk:11-slim as build
+WORKDIR application
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} application.jar
+RUN java -Djarmode=layertools -jar application.jar extract
+
+FROM openjdk:11-slim
+WORKDIR application
+#Copies each layer displayed as a result of the jarmode command
+COPY --from=build application/dependencies/ ./
+COPY --from=build application/spring-boot-loader/ ./
+COPY --from=build application/snapshot-dependencies/ ./
+COPY --from=build application/application/ ./
+#Uses org.springframework.boot.loader.JarLauncher to execute the application
+ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
+#DOCKER FILE USING LAYERS
+
+#
+#
+#
+#
+
+#BASIC DOCKER FILE
+
 #Start with a base image containing Java runtime
 FROM openjdk:11-slim
 
@@ -13,7 +38,14 @@ COPY ${JAR_FILE} app.jar
 #execute the application
 ENTRYPOINT ["java","-jar","/app.jar"]
 
-#MultiStage adds only the necessary things to run the application
+#BASIC DOCKER FILE
+
+#
+#
+#
+#
+
+#MULTISTAGE ADDS ONLY THE NECESSARY THINGS TO RUN THE APPLICATION
 
 ##stage 1
 ##Start with a base image containing Java runtime
@@ -48,3 +80,5 @@ ENTRYPOINT ["java","-jar","/app.jar"]
 ##execute the application
 #ENTRYPOINT ["java","-cp","app:app/lib/*","com.optimagrowth.license.
 #            LicenseServiceApplication"]
+
+#MULTISTAGE ADDS ONLY THE NECESSARY THINGS TO RUN THE APPLICATION
