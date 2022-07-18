@@ -21,7 +21,7 @@ services:
       timeout: 5s
       retries: 5
   configserver:
-    image: ostock/configserver:0.0.1-SNAPSHOT
+    image: csdavidg/configserver:0.0.1-SNAPSHOT
     ports:
        - "8071:8071"
     environment:
@@ -30,14 +30,32 @@ services:
       backend:
         aliases:
           - "configserver"
+  eurekaservice:
+    image: csdavidg/eurekaserver:0.0.1-SNAPSHOT
+    ports:
+      - "8070:8070"
+    environment:
+      ENCRYPT_KEY: "fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo"
+      CONFIGSERVER_URI: "http://configserver:8071"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started  
+    networks:
+      backend:
+        aliases:
+          - "eurekaservice"
   licensingservice:
-    image: ostock/licensing-service:0.0.3-SNAPSHOT
+    image: csdavidg/licensing-service:0.0.3-SNAPSHOT
     environment:
       PROFILE: "dev"
       CONFIGSERVER_URI: "http://configserver:8071"
       CONFIGSERVER_PORT:   "8071"
       DATABASESERVER_PORT: "5432"
       ENCRYPT_KEY:       "IMSYMMETRIC"
+      DATABASE_HOST: database
+      EUREKA_HOST: eurekaservice
     depends_on:
       database:
         condition: service_healthy
@@ -45,15 +63,18 @@ services:
         condition: service_started
     ports:
       - "8080:8080"
+      - "5005:5005"
     networks:
       - backend
   organizationservice:
-    image: ostock/organization-service:0.0.1-SNAPSHOT
+    image: csdavidg/organization-service:0.0.1-SNAPSHOT
     environment:
       PROFILE: "dev"
       CONFIGSERVER_URI: "http://configserver:8071"
       CONFIGSERVER_PORT:   "8071"
       DATABASESERVER_PORT: "5432"
+      DATABASE_HOST: database
+      EUREKA_HOST: eurekaservice
       ENCRYPT_KEY:       "IMSYMMETRIC"
     depends_on:
       database:

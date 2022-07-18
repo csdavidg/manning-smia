@@ -33,19 +33,21 @@ public class OrganizationRestTemplateClient {
         }
 
         logger.debug("Unable to locate organization from the redis cache: {}.", organizationId);
-        
-		ResponseEntity<Organization> restExchange =
-				restTemplate.exchange(
-						"http://gateway:8072/organization/v1/organization/{organizationId}",
-						HttpMethod.GET,
-						null, Organization.class, organizationId);
-		
-		/*Save the record from cache*/
-        organization = restExchange.getBody();
+
+		organization = requestInformationFromOrganizationService(organizationId);
         if (organization != null) {
             cacheOrganizationObject(organization);
         }
 
+		return organization;
+	}
+
+	public Organization requestInformationFromOrganizationService(String orgId){
+		ResponseEntity<Organization> restExchange =
+				restTemplate.exchange(
+						"http://gateway:8072/organization/v1/organization/{organizationId}",
+						HttpMethod.GET,
+						null, Organization.class, orgId);
 		return restExchange.getBody();
 	}
 

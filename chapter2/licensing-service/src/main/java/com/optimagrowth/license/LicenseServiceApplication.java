@@ -2,6 +2,7 @@ package com.optimagrowth.license;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -11,7 +12,8 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import java.util.Locale;
 
 @SpringBootApplication
-@RefreshScope
+@RefreshScope// Spring boot actuator annotation that exposes the /refresh endpoint to force the application to reload its properties
+@EnableDiscoveryClient
 public class LicenseServiceApplication {
 
     public static void main(String[] args) {
@@ -36,3 +38,4 @@ public class LicenseServiceApplication {
     }
 
 }
+

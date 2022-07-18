@@ -5,6 +5,6 @@ spring:
     active: dev
   cloud:
     config:
-      uri: http://localhost:8071
+      uri: ${CONFIGSERVER_URI:http://localhost:8071}
   config:
     import: "optional:configserver:"

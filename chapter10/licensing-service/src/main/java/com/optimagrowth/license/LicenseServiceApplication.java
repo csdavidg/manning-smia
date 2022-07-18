@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import com.optimagrowth.license.events.model.OrganizationChangeModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -44,7 +48,7 @@ public class LicenseServiceApplication {
 	}
 	
 	@Bean
-	JedisConnectionFactory jedisConnectionFactory() {
+	public JedisConnectionFactory jedisConnectionFactory() {
 		String hostname = serviceConfig.getRedisServer();
 		int port = Integer.parseInt(serviceConfig.getRedisPort());
 	    RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(hostname, port);
@@ -59,10 +63,10 @@ public class LicenseServiceApplication {
 		return template;
 	}
 
-//	@StreamListener(Sink.INPUT)
-//	public void loggerSink(OrganizationChangeModel orgChange) {
-//		logger.debug("Received {} event for the organization id {}", orgChange.getAction(), orgChange.getOrganizationId());
-//	}
+	/*@StreamListener(Sink.INPUT)
+	public void loggerSink(OrganizationChangeModel orgChange) {
+		logger.debug("Received {} event for the organization id {}", orgChange.getAction(), orgChange.getOrganizationId());
+	}*/
 
 	@Bean
 	public LocaleResolver localeResolver() {

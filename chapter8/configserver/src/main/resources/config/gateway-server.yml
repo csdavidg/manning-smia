@@ -15,7 +15,11 @@ spring:
   cloud:
     loadbalancer.ribbon.enabled: false
     gateway:
-        routes:
+#      These properties enable the gateway to make an automatic mapping using the SERVICE_ID provided by the Eureka Server
+#      discovery.locator:
+#        enabled: true
+#        lowerCaseServiceId: true
+      routes:
         - id: organization-service
           uri: lb://organization-service
           predicates:

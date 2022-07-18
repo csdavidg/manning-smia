@@ -77,7 +77,8 @@ public class LicenseService {
 			break;
 		case "rest":
 			System.out.println("I am using the rest client");
-			organization = organizationRestClient.getOrganization(organizationId);
+//			organization = organizationRestClient.getOrganization(organizationId);
+			organization = getOrganizationUsingCircuitBreaker(organizationId);
 			break;
 		case "discovery":
 			System.out.println("I am using the discovery client");
@@ -89,6 +90,11 @@ public class LicenseService {
 		}
 
 		return organization;
+	}
+
+	@CircuitBreaker(name = "organizationService")
+	private Organization getOrganizationUsingCircuitBreaker(String organizationId) {
+		return organizationRestClient.getOrganization(organizationId);
 	}
 
 	public License createLicense(License license){
@@ -119,14 +125,14 @@ public class LicenseService {
 	@Retry(name = "retryLicenseService", fallbackMethod = "buildFallbackLicenseList")
 	@Bulkhead(name = "bulkheadLicenseService", type= Type.THREADPOOL, fallbackMethod = "buildFallbackLicenseList")
 	public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
-		logger.debug("getLicensesByOrganization Correlation id: {}",
-				UserContextHolder.getContext().getCorrelationId());
+		logger.debug("getLicensesByOrganization Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
 		randomlyRunLong();
 		return licenseRepository.findByOrganizationId(organizationId);
 	}
 
 	@SuppressWarnings("unused")
 	private List<License> buildFallbackLicenseList(String organizationId, Throwable t){
+		logger.debug("FallBack method Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
 		List<License> fallbackList = new ArrayList<>();
 		License license = new License();
 		license.setLicenseId("0000000-00-00000");
